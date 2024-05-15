@@ -126,7 +126,8 @@ export default class MovieService extends Component {
         headers: {
           accept: "application/json",
           "Content-Type": "application/json;charset=utf-8",
-          Authorization: "Bearer YOUR_ACCESS_TOKEN",
+          Authorization:
+            "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjMWE0NGU4Y2Y3Zjc0YWQwZmIwNGMyZmFjNWYyMGU0YiIsInN1YiI6IjY2MmNjY2E5MDcyMTY2MDEyYTY5MTBiOCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.X-UsQjPnuHjCouNzgkskbTNBEiOwfmaQP7sCOUhH5uI",
         },
         body: JSON.stringify({
           value: valueRate,
@@ -140,6 +141,14 @@ export default class MovieService extends Component {
       );
       const data = await response.json();
       console.log("addRated", data);
+
+      const { ratedMovies } = this.props;
+      // После успешного добавления рейтинга, обновляем рейтинг фильма в состоянии приложения
+      const updatedRatedMovies = ratedMovies.map((movie) =>
+        movie.id === movieId ? { ...movie, rating: valueRate } : movie,
+      );
+      const { setRatedMovies } = this.props;
+      setRatedMovies(updatedRatedMovies);
     } catch (error) {
       this.handleFetchError(error);
     }
@@ -153,5 +162,7 @@ export default class MovieService extends Component {
 MovieService.propTypes = {
   setMovies: PropTypes.func.isRequired,
   setError: PropTypes.func.isRequired,
+  setRatedMovies: PropTypes.func.isRequired,
   searchWord: PropTypes.string.isRequired,
+  ratedMovies: PropTypes.arrayOf(PropTypes.shape({})).isRequired, // Массив объектов фильмов (обязательный)
 };

@@ -111,11 +111,7 @@ export default class MovieApp extends Component {
     if (!isOnline) {
       content = (
         <Alert
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            marginBottom: "17px",
-          }}
+          className="alert"
           type="error"
           description=""
           message="Отсутствует подключение к интернету."
@@ -140,6 +136,8 @@ export default class MovieApp extends Component {
             setMovies={this.setMovies}
             setError={this.setError}
             searchWord={query}
+            setRatedMovies={this.setRatedMovies} // Добавлено
+            ratedMovies={ratedMovies} // Добавлено
           />
           {searchPerformed && movies.length === 0 && !error && !loading && (
             <Alert description="" message="Результаты не найдены" type="info" />
@@ -148,15 +146,10 @@ export default class MovieApp extends Component {
             <>
               <MovieList
                 movies={movies}
-                onRateChange={this.movieService.addRated}
+                onRateChange={this.movieService && this.movieService.addRated}
               />
               <Pagination
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  marginBottom: "17px",
-                  marginTop: "36px",
-                }}
+                className="pagination"
                 defaultCurrent={currentPage}
                 total={totalPages}
                 pageSize={10}
