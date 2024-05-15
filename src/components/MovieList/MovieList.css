@@ -1,0 +1,10 @@
+.movies {
+  padding: 0px 36px;
+  gap: 36px;
+}
+
+.movies-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}

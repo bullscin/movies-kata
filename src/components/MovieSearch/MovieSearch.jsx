@@ -1,45 +1,60 @@
-/* eslint-disable no-console */
 import React, { Component } from "react";
-import MovieList from "../FilmList/FilmList";
+import PropTypes from "prop-types";
+import { debounce } from "lodash";
 
+import "./MovieSearch.css";
+
+// Компонент для поиска фильмов
 export default class MovieSearch extends Component {
   constructor(props) {
     super(props);
+    // Инициализация состояния компонента
     this.state = {
-      movies: [],
+      querySearch: "", // Строка запроса
     };
+
+    // Используем debounce для обработчика изменения ввода
+    this.debouncedHandleSearchInputChange = debounce(
+      this.handleSearchInputChange,
+      1500,
+    );
   }
 
-  componentDidMount() {
-    this.fetchMovies();
+  // Функция обработчика изменения запроса с задержкой
+  handleSearchInputChange(query) {
+    const { onQueryChange } = this.props;
+    // Вызываем метод переданный через props для изменения запроса
+    onQueryChange(query);
   }
 
-  async fetchMovies() {
-    try {
-      const response = await fetch(
-        "https://api.themoviedb.org/3/search/movie?query=return&include_adult=false&language=en-US&page=1",
-        {
-          method: "GET",
-          headers: {
-            accept: "application/json",
-            Authorization: "Bearer YOUR_API_KEY",
-          },
-        },
-      );
-      const data = await response.json();
-      console.log(data);
-      this.setState({ movies: data.results });
-    } catch (error) {
-      console.error(error);
-    }
+  // Обработчик изменения ввода с задержкой
+  onChangeInput(event) {
+    const { value } = event.target;
+    // Обновляем состояние компонента
+    this.setState({
+      querySearch: value,
+    });
+    // Вызываем обернутую в debounce функцию обработчика изменения ввода
+    this.debouncedHandleSearchInputChange(value);
   }
 
   render() {
-    const { movies } = this.state;
+    const { querySearch } = this.state;
     return (
-      <div className="container">
-        <MovieList movies={movies} />
-      </div>
+      // Ввод для поиска фильмов
+      <header className="header">
+        <input
+          className="movie-search"
+          placeholder="Type to search..."
+          value={querySearch}
+          onChange={(event) => this.onChangeInput(event)}
+        />
+      </header>
     );
   }
 }
+
+// Определение типов ожидаемых свойств для MovieSearch
+MovieSearch.propTypes = {
+  onQueryChange: PropTypes.func.isRequired, // Метод для обновления запроса
+};
