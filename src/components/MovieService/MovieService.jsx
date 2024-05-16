@@ -1,32 +1,37 @@
-/* eslint-disable class-methods-use-this */
-/* eslint-disable react/no-unused-class-component-methods */
-/* eslint-disable consistent-return */
+/* eslint-disable no-console */
 import { Component } from "react";
 import PropTypes from "prop-types";
 
 export default class MovieService extends Component {
   constructor(props) {
     super(props);
-    this.sessionId = null; // Инициализируем переменную guestSessionId
+    this.sessionId = null;
+    this.apiKey = "c1a44e8cf7f74ad0fb04c2fac5f20e4b";
+    this.apiBase = "https://api.themoviedb.org/3";
 
     this.createGuestSession = this.createGuestSession.bind(this);
     this.addRated = this.addRated.bind(this);
+    this.handleFetchError = this.handleFetchError.bind(this);
   }
 
   componentDidMount() {
-    const { searchWord } = this.props;
-    this.fetchMovies(searchWord, 1);
-    this.addRated();
+    const movieId = 531278;
+    const valueRate = 4;
+    this.createGuestSession().then((sessionId) => {
+      this.addRated(movieId, valueRate, sessionId);
+      this.getRated(sessionId);
+    });
   }
 
   componentDidUpdate(prevProps) {
     const { searchWord } = this.props;
+
     if (searchWord !== prevProps.searchWord) {
       this.fetchMovies(searchWord, 1);
     }
   }
 
-  handleFetchError(error) {
+  async handleFetchError(error) {
     const { setError } = this.props;
     if (error.message === "Failed to fetch") {
       setError(
@@ -51,31 +56,10 @@ export default class MovieService extends Component {
     }
   }
 
-  async getRated() {
-    const options = {
-      method: "GET",
-      headers: {
-        accept: "application/json",
-        Authorization:
-          "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjMWE0NGU4Y2Y3Zjc0YWQwZmIwNGMyZmFjNWYyMGU0YiIsInN1YiI6IjY2MmNjY2E5MDcyMTY2MDEyYTY5MTBiOCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.X-UsQjPnuHjCouNzgkskbTNBEiOwfmaQP7sCOUhH5uI",
-      },
-    };
+  async getRated(sessionId) {
     try {
       const response = await fetch(
-        `https://api.themoviedb.org/3/guest_session/${this.sessionId}/rated/movies?language=en-US&page=1&sort_by=created_at.asc`,
-        options,
-      );
-      const data = await response.json();
-      console.log("getRated", data);
-    } catch (error) {
-      this.handleFetchError(error);
-    }
-  }
-
-  async fetchMovies(querySearch, page) {
-    try {
-      const response = await fetch(
-        `https://api.themoviedb.org/3/search/movie?query=${querySearch}&include_adult=false&language=en-US&page=${page}`,
+        `${this.apiBase}/guest_session/${sessionId}/rated/movies?api_key=${this.apiKey}&language=en-US`,
         {
           method: "GET",
           headers: {
@@ -86,69 +70,70 @@ export default class MovieService extends Component {
         },
       );
       const data = await response.json();
-      const moviesWithRating = data.results.map(
-        (movie) => ({ ...movie, rating: 0 }), // Добавляем рейтинг по умолчанию
+      console.log(data);
+    } catch (error) {
+      this.handleFetchError(error);
+    }
+  }
+
+  async fetchMovies(querySearch, page) {
+    const { setMovies } = this.props;
+    try {
+      const response = await fetch(
+        `${this.apiBase}/search/movie?query=${querySearch}&include_adult=false&language=en-US&page=${page}&api_key=${this.apiKey}`,
+        {
+          method: "GET",
+          headers: {
+            accept: "application/json",
+            Authorization:
+              "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjMWE0NGU4Y2Y3Zjc0YWQwZmIwNGMyZmFjNWYyMGU0YiIsInN1YiI6IjY2MmNjY2E5MDcyMTY2MDEyYTY5MTBiOCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.X-UsQjPnuHjCouNzgkskbTNBEiOwfmaQP7sCOUhH5uI",
+          },
+        },
       );
-      const { setMovies } = this.props;
-      setMovies(moviesWithRating, data.total_pages);
+      const data = await response.json();
+      setMovies(data.results, data.total_pages);
     } catch (error) {
       this.handleFetchError(error);
     }
   }
 
   async createGuestSession() {
-    const options = {
-      method: "GET",
-      headers: {
-        accept: "application/json",
-        Authorization:
-          "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjMWE0NGU4Y2Y3Zjc0YWQwZmIwNGMyZmFjNWYyMGU0YiIsInN1YiI6IjY2MmNjY2E5MDcyMTY2MDEyYTY5MTBiOCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.X-UsQjPnuHjCouNzgkskbTNBEiOwfmaQP7sCOUhH5uI",
-      },
-    };
-
     try {
       const response = await fetch(
-        "https://api.themoviedb.org/3/authentication/guest_session/new",
-        options,
+        `${this.apiBase}/authentication/guest_session/new?api_key=${this.apiKey}`,
+        {
+          method: "GET",
+          headers: {
+            accept: "application/json",
+          },
+        },
       );
       const data = await response.json();
-      console.log("createGuestSession", data);
       this.sessionId = data.guest_session_id;
+      localStorage.setItem("sessionId", this.sessionId);
+      return this.sessionId;
     } catch (error) {
       this.handleFetchError(error);
+      // Добавляем возврат значения в случае ошибки
+      return null;
     }
   }
 
-  async addRated(movieId, valueRate) {
+  async addRated(movieId, valueRate, sessionId) {
     try {
-      const options = {
-        method: "POST",
-        headers: {
-          accept: "application/json",
-          "Content-Type": "application/json;charset=utf-8",
-          Authorization:
-            "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjMWE0NGU4Y2Y3Zjc0YWQwZmIwNGMyZmFjNWYyMGU0YiIsInN1YiI6IjY2MmNjY2E5MDcyMTY2MDEyYTY5MTBiOCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.X-UsQjPnuHjCouNzgkskbTNBEiOwfmaQP7sCOUhH5uI",
+      await fetch(
+        `${this.apiBase}/movie/${movieId}/rating?api_key=${this.apiKey}&guest_session_id=${sessionId}`,
+        {
+          method: "POST",
+          headers: {
+            accept: "application/json",
+            "Content-Type": "application/json;charset=utf-8",
+          },
+          body: JSON.stringify({
+            value: valueRate,
+          }),
         },
-        body: JSON.stringify({
-          value: valueRate,
-        }),
-      };
-
-      const guestSessionId = localStorage.getItem("sessionId");
-      const response = await fetch(
-        `https://api.themoviedb.org/3/movie/${movieId}/rating?guest_session_id=${guestSessionId}`,
-        options,
       );
-      const data = await response.json();
-      console.log("addRated", data);
-
-      const { ratedMovies } = this.props;
-      // После успешного добавления рейтинга, обновляем рейтинг фильма в состоянии приложения
-      const updatedRatedMovies = ratedMovies.map((movie) =>
-        movie.id === movieId ? { ...movie, rating: valueRate } : movie,
-      );
-      const { setRatedMovies } = this.props;
-      setRatedMovies(updatedRatedMovies);
     } catch (error) {
       this.handleFetchError(error);
     }
@@ -162,7 +147,10 @@ export default class MovieService extends Component {
 MovieService.propTypes = {
   setMovies: PropTypes.func.isRequired,
   setError: PropTypes.func.isRequired,
-  setRatedMovies: PropTypes.func.isRequired,
   searchWord: PropTypes.string.isRequired,
-  ratedMovies: PropTypes.arrayOf(PropTypes.shape({})).isRequired, // Массив объектов фильмов (обязательный)
+};
+
+MovieService.defaultProps = {
+  // setRatedMovies: () => {},
+  // ratedMovies: [],
 };

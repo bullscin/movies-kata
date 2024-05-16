@@ -1,10 +1,8 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { debounce } from "lodash";
-
 import "./MovieSearch.css";
 
-// Компонент для поиска фильмов
 export default class MovieSearch extends Component {
   constructor(props) {
     super(props);
@@ -41,7 +39,6 @@ export default class MovieSearch extends Component {
   render() {
     const { querySearch } = this.state;
     return (
-      // Ввод для поиска фильмов
       <header className="header">
         <input
           className="movie-search"
@@ -54,7 +51,6 @@ export default class MovieSearch extends Component {
   }
 }
 
-// Определение типов ожидаемых свойств для MovieSearch
 MovieSearch.propTypes = {
-  onQueryChange: PropTypes.func.isRequired, // Метод для обновления запроса
+  onQueryChange: PropTypes.func.isRequired,
 };
