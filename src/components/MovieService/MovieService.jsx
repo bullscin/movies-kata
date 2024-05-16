@@ -1,20 +1,30 @@
-/* eslint-disable no-console */
-import { Component } from "react";
-import PropTypes from "prop-types";
+/* eslint-disable no-console */ // Отключение проверки использования console.log
+import { Component } from "react"; // Импорт компонента Component из библиотеки react
+import PropTypes from "prop-types"; // Импорт PropTypes для проверки типов свойств
 
 export default class MovieService extends Component {
   constructor(props) {
     super(props);
+    // Инициализация начального состояния
     this.sessionId = null;
+    // Установка API ключа и базового URL
     this.apiKey = "c1a44e8cf7f74ad0fb04c2fac5f20e4b";
     this.apiBase = "https://api.themoviedb.org/3";
 
+    // Привязка контекста для методов
     this.createGuestSession = this.createGuestSession.bind(this);
     this.addRated = this.addRated.bind(this);
     this.handleFetchError = this.handleFetchError.bind(this);
   }
 
   componentDidMount() {
+    const { searchWord } = this.props;
+    // Загрузка фильмов при монтировании компонента, если есть поисковый запрос
+    if (searchWord) {
+      this.fetchMovies(searchWord, 1);
+    }
+
+    // Пример добавления рейтинга и получения оцененных фильмов
     const movieId = 531278;
     const valueRate = 4;
     this.createGuestSession().then((sessionId) => {
@@ -26,13 +36,16 @@ export default class MovieService extends Component {
   componentDidUpdate(prevProps) {
     const { searchWord } = this.props;
 
+    // Проверка на изменение поискового запроса и загрузка фильмов
     if (searchWord !== prevProps.searchWord) {
       this.fetchMovies(searchWord, 1);
     }
   }
 
+  // Обработка ошибок при запросах
   async handleFetchError(error) {
     const { setError } = this.props;
+    // Проверка типа ошибки и установка соответствующего сообщения об ошибке
     if (error.message === "Failed to fetch") {
       setError(
         new Error(
@@ -56,26 +69,32 @@ export default class MovieService extends Component {
     }
   }
 
+  // Получение списка оцененных фильмов
   async getRated(sessionId) {
     try {
-      const response = await fetch(
-        `${this.apiBase}/guest_session/${sessionId}/rated/movies?api_key=${this.apiKey}&language=en-US`,
-        {
-          method: "GET",
-          headers: {
-            accept: "application/json",
-            Authorization:
-              "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjMWE0NGU4Y2Y3Zjc0YWQwZmIwNGMyZmFjNWYyMGU0YiIsInN1YiI6IjY2MmNjY2E5MDcyMTY2MDEyYTY5MTBiOCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.X-UsQjPnuHjCouNzgkskbTNBEiOwfmaQP7sCOUhH5uI",
+      let ratedMovies = JSON.parse(localStorage.getItem("ratedMovies")); // Проверяем наличие данных в localStorage
+      if (!ratedMovies) {
+        const response = await fetch(
+          `${this.apiBase}/guest_session/${sessionId}/rated/movies?api_key=${this.apiKey}&language=en-US`,
+          {
+            method: "GET",
+            headers: {
+              accept: "application/json",
+              Authorization:
+                "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjMWE0NGU4Y2Y3Zjc0YWQwZmIwNGMyZmFjNWYyMGU0YiIsInN1YiI6IjY2MmNjY2E5MDcyMTY2MDEyYTY5MTBiOCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.X-UsQjPnuHjCouNzgkskbTNBEiOwfmaQP7sCOUhH5uI",
+            },
           },
-        },
-      );
-      const data = await response.json();
-      console.log(data);
+        );
+        const data = await response.json();
+        ratedMovies = data.results.filter((movie) => movie.rating > 0);
+        localStorage.setItem("ratedMovies", JSON.stringify(ratedMovies));
+      }
     } catch (error) {
       this.handleFetchError(error);
     }
   }
 
+  // Запрос для получения списка фильмов по поисковому запросу
   async fetchMovies(querySearch, page) {
     const { setMovies } = this.props;
     try {
@@ -97,6 +116,7 @@ export default class MovieService extends Component {
     }
   }
 
+  // Создание гостевой сессии
   async createGuestSession() {
     try {
       const response = await fetch(
@@ -114,11 +134,12 @@ export default class MovieService extends Component {
       return this.sessionId;
     } catch (error) {
       this.handleFetchError(error);
-      // Добавляем возврат значения в случае ошибки
+      // Возвращаем null в случае ошибки
       return null;
     }
   }
 
+  // Добавление рейтинга для фильма
   async addRated(movieId, valueRate, sessionId) {
     try {
       await fetch(
@@ -140,17 +161,19 @@ export default class MovieService extends Component {
   }
 
   render() {
-    return null;
+    return null; // Рендеринг компонента
   }
 }
 
+// Проверка типов для props компонента MovieService
 MovieService.propTypes = {
-  setMovies: PropTypes.func.isRequired,
-  setError: PropTypes.func.isRequired,
-  searchWord: PropTypes.string.isRequired,
+  setMovies: PropTypes.func.isRequired, // Функция для установки списка фильмов
+  setError: PropTypes.func.isRequired, // Функция для установки ошибки
+  searchWord: PropTypes.string.isRequired, // Поисковый запрос
 };
 
+// Значения по умолчанию для props компонента MovieService
 MovieService.defaultProps = {
-  // setRatedMovies: () => {},
-  // ratedMovies: [],
+  // setRatedMovies: () => {}, // Пустая функция для установки списка оцененных фильмов
+  // ratedMovies: [], // Пустой массив для хранения оцененных фильмов
 };

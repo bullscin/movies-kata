@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { debounce } from "lodash";
-import "./MovieSearch.css";
+import "./MovieSearch.css"; // Импорт стилей
 
 export default class MovieSearch extends Component {
   constructor(props) {
@@ -11,7 +11,7 @@ export default class MovieSearch extends Component {
       querySearch: "", // Строка запроса
     };
 
-    // Используем debounce для обработчика изменения ввода
+    // Используем debounce для обработчика изменения ввода с задержкой
     this.debouncedHandleSearchInputChange = debounce(
       this.handleSearchInputChange,
       1500,
@@ -40,11 +40,13 @@ export default class MovieSearch extends Component {
     const { querySearch } = this.state;
     return (
       <header className="header">
+        {" "}
+        {/* Обертка для поисковой строки */}
         <input
-          className="movie-search"
-          placeholder="Type to search..."
-          value={querySearch}
-          onChange={(event) => this.onChangeInput(event)}
+          className="movie-search" // Класс для стилизации поисковой строки
+          placeholder="Type to search..." // Плейсхолдер в поисковой строке
+          value={querySearch} // Значение поискового запроса
+          onChange={(event) => this.onChangeInput(event)} // Обработчик изменения ввода
         />
       </header>
     );
@@ -52,5 +54,5 @@ export default class MovieSearch extends Component {
 }
 
 MovieSearch.propTypes = {
-  onQueryChange: PropTypes.func.isRequired,
+  onQueryChange: PropTypes.func.isRequired, // Проверка типа переданной функции для изменения запроса
 };

@@ -1,55 +1,58 @@
-// MovieList.jsx
+// Импорт зависимостей
 import React from "react";
 import PropTypes from "prop-types";
-import { Pagination } from "antd";
-import Movie from "../Movie/Movie";
-import "./MovieList.css";
+import { Pagination } from "antd"; // Импорт компонента Pagination из Ant Design
+import Movie from "../Movie/Movie"; // Импорт компонента Movie
+import "./MovieList.css"; // Импорт стилей
 
+// Функциональный компонент MovieList
 export default function MovieList({
   movies,
-  searchPerformed,
   currentPage,
   totalPages,
   onPageChange,
+  onRatingChange,
 }) {
-  if (!searchPerformed) {
-    return <p>Please search for a movie.</p>;
-  }
-
+  // Проверка наличия фильмов
   if (movies.length === 0) {
-    return <p>No movies found.</p>;
+    return <p>No movies found.</p>; // Вывод сообщения, если фильмы не найдены
   }
 
+  // Возвращаемый JSX
   return (
     <div>
+      {/* Список фильмов */}
       <ul className="movies movies-list">
         {/* Маппинг массива фильмов для создания компонента Movie для каждого элемента */}
         {movies.map((movie) => (
-          <Movie key={movie.id} movie={movie} /> // Компонент Movie для каждого фильма
+          <Movie key={movie.id} movie={movie} onRatingChange={onRatingChange} /> // Компонент Movie для каждого фильма
         ))}
       </ul>
+      {/* Компонент пагинации */}
       <Pagination
-        className="pagination"
-        current={currentPage}
-        total={totalPages * 10}
-        onChange={onPageChange}
+        className="pagination" // Класс для стилизации
+        current={currentPage} // Текущая страница
+        total={totalPages * 10} // Общее количество элементов
+        onChange={onPageChange} // Обработчик изменения страницы
       />
     </div>
   );
 }
 
+// Проверка типов для props компонента MovieList
 MovieList.propTypes = {
   movies: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      title: PropTypes.string.isRequired,
-      release_date: PropTypes.string.isRequired,
-      overview: PropTypes.string.isRequired,
-      poster_path: PropTypes.string,
+      id: PropTypes.number.isRequired, // Идентификатор фильма
+      title: PropTypes.string.isRequired, // Название фильма
+      release_date: PropTypes.string.isRequired, // Дата выпуска фильма
+      overview: PropTypes.string.isRequired, // Описание фильма
+      poster_path: PropTypes.string, // Путь к постеру фильма
     }),
-  ).isRequired,
-  searchPerformed: PropTypes.bool.isRequired,
-  currentPage: PropTypes.number.isRequired,
-  totalPages: PropTypes.number.isRequired,
-  onPageChange: PropTypes.func.isRequired,
+  ).isRequired, // Массив объектов фильмов
+
+  currentPage: PropTypes.number.isRequired, // Текущая страница пагинации
+  totalPages: PropTypes.number.isRequired, // Общее количество страниц
+  onPageChange: PropTypes.func.isRequired, // Обработчик изменения страницы
+  onRatingChange: PropTypes.func.isRequired, // Обработчик изменения рейтинга фильма
 };
