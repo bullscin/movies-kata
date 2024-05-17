@@ -13,7 +13,7 @@ export default class Movie extends Component {
     super(props);
     // Инициализация состояния компонента
     this.state = {
-      rating: 0, // Рейтинг фильма
+      // rating: 0, // Рейтинг фильма
     };
 
     // Привязка контекста для методов класса
@@ -25,7 +25,7 @@ export default class Movie extends Component {
   handleRatingChange(value) {
     const { movie, onRatingChange } = this.props; // Получение фильма и обработчика из props
     const { id } = movie;
-    this.setState({ rating: value }); // Установка нового значения рейтинга в состоянии
+    // this.setState({ rating: value }); // Установка нового значения рейтинга в состоянии
     onRatingChange(id, value); // Вызов обработчика изменения рейтинга с передачей id фильма и его рейтинга
   }
 
@@ -38,10 +38,10 @@ export default class Movie extends Component {
 
   render() {
     const { movie, newratedMovies } = this.props; // Получение фильма и новых оцененных фильмов из props
-    const { title, release_date, overview, poster_path } =
+    const { title, release_date, overview, poster_path, rating, genre_ids } =
       movie || newratedMovies; // Деструктуризация свойств фильма
 
-    const { rating } = this.state; // Получение текущего рейтинга из состояния
+    // const { rating } = this.state; // Получение текущего рейтинга из состояния
 
     // Форматирование даты выпуска фильма
     const formattedDate = release_date
@@ -64,7 +64,7 @@ export default class Movie extends Component {
           <p className="date">{formattedDate}</p>
           {/* Жанры фильма (заглушка) */}
           <div className="genre">
-            <p className="text">action</p>
+            <p className="text">{genre_ids}</p>
             <p className="text">drama</p>
           </div>
           {/* Описание фильма */}
@@ -73,7 +73,7 @@ export default class Movie extends Component {
           <Rate
             count={10}
             allowHalf
-            defaultValue={rating}
+            value={rating}
             className="rate"
             onChange={this.handleRatingChange}
           />

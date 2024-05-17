@@ -15,6 +15,7 @@ export default class MovieService extends Component {
     this.createGuestSession = this.createGuestSession.bind(this);
     this.addRated = this.addRated.bind(this);
     this.handleFetchError = this.handleFetchError.bind(this);
+    this.getGenres = this.getGenres.bind(this);
   }
 
   componentDidMount() {
@@ -31,6 +32,7 @@ export default class MovieService extends Component {
       this.addRated(movieId, valueRate, sessionId);
       this.getRated(sessionId);
     });
+    this.getGenres();
   }
 
   componentDidUpdate(prevProps) {
@@ -86,20 +88,24 @@ export default class MovieService extends Component {
           },
         );
         const data = await response.json();
-        ratedMovies = data.results.filter((movie) => movie.rating > 0);
-        localStorage.setItem("ratedMovies", JSON.stringify(ratedMovies));
+        // Проверяем, есть ли свойство results у объекта data
+        if (data.results) {
+          ratedMovies = data.results.filter((movie) => movie.rating > 0);
+        } else {
+          ratedMovies = [];
+        }
+        // localStorage.setItem("ratedMovies", JSON.stringify(ratedMovies));
       }
     } catch (error) {
-      this.handleFetchError(error);
+      // this.handleFetchError(error);
+      console.log(error);
     }
   }
 
-  // Запрос для получения списка фильмов по поисковому запросу
-  async fetchMovies(querySearch, page) {
-    const { setMovies } = this.props;
+  async getGenres() {
     try {
       const response = await fetch(
-        `${this.apiBase}/search/movie?query=${querySearch}&include_adult=false&language=en-US&page=${page}&api_key=${this.apiKey}`,
+        `${this.apiBase}/genre/movie/list?language=en&api_key=${this.apiKey}`,
         {
           method: "GET",
           headers: {
@@ -110,7 +116,28 @@ export default class MovieService extends Component {
         },
       );
       const data = await response.json();
-      setMovies(data.results, data.total_pages);
+      console.log(data);
+    } catch (error) {
+      this.handleFetchError(error);
+    }
+  }
+
+  // Добавление рейтинга для фильма
+  async addRated(movieId, valueRate, sessionId) {
+    try {
+      await fetch(
+        `${this.apiBase}/movie/${movieId}/rating?api_key=${this.apiKey}&guest_session_id=${sessionId}`,
+        {
+          method: "POST",
+          headers: {
+            accept: "application/json",
+            "Content-Type": "application/json;charset=utf-8",
+          },
+          body: JSON.stringify({
+            value: valueRate,
+          }),
+        },
+      );
     } catch (error) {
       this.handleFetchError(error);
     }
@@ -118,6 +145,12 @@ export default class MovieService extends Component {
 
   // Создание гостевой сессии
   async createGuestSession() {
+    const storedSessionId = localStorage.getItem("sessionId");
+    if (storedSessionId) {
+      this.sessionId = storedSessionId;
+      return this.sessionId;
+    }
+
     try {
       const response = await fetch(
         `${this.apiBase}/authentication/guest_session/new?api_key=${this.apiKey}`,
@@ -139,22 +172,23 @@ export default class MovieService extends Component {
     }
   }
 
-  // Добавление рейтинга для фильма
-  async addRated(movieId, valueRate, sessionId) {
+  // Запрос для получения списка фильмов по поисковому запросу
+  async fetchMovies(querySearch, page) {
+    const { setMovies } = this.props;
     try {
-      await fetch(
-        `${this.apiBase}/movie/${movieId}/rating?api_key=${this.apiKey}&guest_session_id=${sessionId}`,
+      const response = await fetch(
+        `${this.apiBase}/search/movie?query=${querySearch}&include_adult=false&language=en-US&page=${page}&api_key=${this.apiKey}`,
         {
-          method: "POST",
+          method: "GET",
           headers: {
             accept: "application/json",
-            "Content-Type": "application/json;charset=utf-8",
+            Authorization:
+              "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjMWE0NGU4Y2Y3Zjc0YWQwZmIwNGMyZmFjNWYyMGU0YiIsInN1YiI6IjY2MmNjY2E5MDcyMTY2MDEyYTY5MTBiOCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.X-UsQjPnuHjCouNzgkskbTNBEiOwfmaQP7sCOUhH5uI",
           },
-          body: JSON.stringify({
-            value: valueRate,
-          }),
         },
       );
+      const data = await response.json();
+      setMovies(data.results, data.total_pages);
     } catch (error) {
       this.handleFetchError(error);
     }

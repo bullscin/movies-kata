@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */ // Отключение проверки prop-types для этого файлов
 import React, { Component } from "react";
-import MovieService from "../MovieService/MovieService"; // Импорт сервиса для работы с фильмами
+import MovieService from "../Service/Service"; // Импорт сервиса для работы с фильмами
 import MovieSearch from "../MovieSearch/MovieSearch"; // Импорт компонента поиска фильмов
 import MovieList from "../MovieList/MovieList"; // Импорт компонента списка фильмов
 import Spin from "../Spin/Spin"; // Импорт компонента загрузки
@@ -47,6 +47,7 @@ export default class SearchTab extends Component {
   }
 
   // Обработчик изменения рейтинга фильма
+  // Обработчик изменения рейтинга фильма
   handleRatingChange(movieId, rating) {
     const { movies } = this.state;
     const updatedMovies = movies.map((movie) => {
@@ -59,8 +60,21 @@ export default class SearchTab extends Component {
     // Обновляем список фильмов и сохраняем рейтинги
     this.setState({ movies: updatedMovies }, () => {
       localStorage.setItem("movies", JSON.stringify(updatedMovies));
-      const ratedMovies = updatedMovies.filter((movie) => movie.rating > 0);
-      localStorage.setItem("ratedMovies", JSON.stringify(ratedMovies));
+
+      // Получаем существующие оцененные фильмы из localStorage
+      const existingRatedMovies =
+        JSON.parse(localStorage.getItem("ratedMovies")) || [];
+
+      // Обновляем или добавляем новый рейтинг
+      const updatedRatedMovies = existingRatedMovies.filter(
+        (movie) => movie.id !== movieId,
+      );
+      if (rating > 0) {
+        const ratedMovie = updatedMovies.find((movie) => movie.id === movieId);
+        updatedRatedMovies.push(ratedMovie);
+      }
+
+      localStorage.setItem("ratedMovies", JSON.stringify(updatedRatedMovies));
     });
   }
 
