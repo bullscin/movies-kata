@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */ // Отключение проверки prop-types для этого файлов
 import React, { Component } from "react";
-import MovieService from "../Service/Service"; // Импорт сервиса для работы с фильмами
+import Service from "../Service/Service"; // Импорт сервиса для работы с фильмами
 import MovieSearch from "../MovieSearch/MovieSearch"; // Импорт компонента поиска фильмов
 import MovieList from "../MovieList/MovieList"; // Импорт компонента списка фильмов
 import Spin from "../Spin/Spin"; // Импорт компонента загрузки
@@ -24,7 +24,7 @@ export default class SearchTab extends Component {
     this.handlePageChange = this.handlePageChange.bind(this);
     this.setMovies = this.setMovies.bind(this);
     this.setError = this.setError.bind(this);
-    this.movieService = new MovieService({
+    this.Service = new Service({
       // Инициализация сервиса для работы с фильмами
       setMovies: this.setMovies,
       setError: this.setError,
@@ -42,7 +42,7 @@ export default class SearchTab extends Component {
     this.setState({ currentPage: page, loading: true }, () => {
       const { query, currentPage } = this.state;
       // Вызываем метод для загрузки фильмов с учетом новой страницы
-      this.movieService.fetchMovies(query, currentPage);
+      this.Service.fetchMovies(query, currentPage);
     });
   }
 
@@ -114,9 +114,9 @@ export default class SearchTab extends Component {
         {/* Отображение спиннера во время загрузки */}
         {loading && <Spin />}
         {/* Компонент сервиса для загрузки фильмов */}
-        <MovieService
+        <Service
           ref={(movieService) => {
-            this.movieService = movieService;
+            this.Service = movieService;
           }}
           setMovies={this.setMovies}
           setError={this.setError}

@@ -71,7 +71,7 @@ export default class MovieService extends Component {
     }
   }
 
-  // Получение списка оцененных фильмов
+  /* Получение списка оцененных фильмов */
   async getRated(sessionId) {
     try {
       let ratedMovies = JSON.parse(localStorage.getItem("ratedMovies")); // Проверяем наличие данных в localStorage
@@ -94,7 +94,6 @@ export default class MovieService extends Component {
         } else {
           ratedMovies = [];
         }
-        // localStorage.setItem("ratedMovies", JSON.stringify(ratedMovies));
       }
     } catch (error) {
       // this.handleFetchError(error);
@@ -102,6 +101,7 @@ export default class MovieService extends Component {
     }
   }
 
+  /* Получение списка жанров фильмов */
   async getGenres() {
     try {
       const response = await fetch(
@@ -117,8 +117,10 @@ export default class MovieService extends Component {
       );
       const data = await response.json();
       console.log(data);
+      return data;
     } catch (error) {
-      this.handleFetchError(error);
+      this.handleFetchError(error); // Обработка ошибок
+      return null;
     }
   }
 
@@ -204,10 +206,4 @@ MovieService.propTypes = {
   setMovies: PropTypes.func.isRequired, // Функция для установки списка фильмов
   setError: PropTypes.func.isRequired, // Функция для установки ошибки
   searchWord: PropTypes.string.isRequired, // Поисковый запрос
-};
-
-// Значения по умолчанию для props компонента MovieService
-MovieService.defaultProps = {
-  // setRatedMovies: () => {}, // Пустая функция для установки списка оцененных фильмов
-  // ratedMovies: [], // Пустой массив для хранения оцененных фильмов
 };

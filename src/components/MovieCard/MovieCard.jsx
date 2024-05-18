@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable no-console */ // Отключение проверки на использование console.log
 /* eslint-disable class-methods-use-this */ // Отключение требования использования this внутри класса
 /* eslint-disable react/prop-types */ // Отключение проверки prop-types для этого файла
@@ -6,16 +7,11 @@ import React, { Component } from "react";
 import PropTypes from "prop-types"; // Импорт библиотеки prop-types
 import { format } from "date-fns"; // Импорт функции форматирования даты из библиотеки date-fns
 import { Rate } from "antd"; // Импорт компонента Rate из библиотеки antd
-import "./Movie.css"; // Импорт стилей для компонента Movie
+import "./MovieCard.css"; // Импорт стилей для компонента Movie
 
 export default class Movie extends Component {
   constructor(props) {
     super(props);
-    // Инициализация состояния компонента
-    this.state = {
-      // rating: 0, // Рейтинг фильма
-    };
-
     // Привязка контекста для методов класса
     this.shortenDescription = this.shortenDescription.bind(this);
     this.handleRatingChange = this.handleRatingChange.bind(this);
@@ -25,7 +21,6 @@ export default class Movie extends Component {
   handleRatingChange(value) {
     const { movie, onRatingChange } = this.props; // Получение фильма и обработчика из props
     const { id } = movie;
-    // this.setState({ rating: value }); // Установка нового значения рейтинга в состоянии
     onRatingChange(id, value); // Вызов обработчика изменения рейтинга с передачей id фильма и его рейтинга
   }
 
@@ -41,12 +36,15 @@ export default class Movie extends Component {
     const { title, release_date, overview, poster_path, rating, genre_ids } =
       movie || newratedMovies; // Деструктуризация свойств фильма
 
-    // const { rating } = this.state; // Получение текущего рейтинга из состояния
-
     // Форматирование даты выпуска фильма
     const formattedDate = release_date
       ? format(new Date(release_date), "yyyy-MM-dd")
       : "Invalid Date";
+
+    // const genres = this.context
+    //   ? this.context.filter((genre) => genre_ids.includes(genre.id))
+    //   : [];
+    // console.log("Genres:", genres);
 
     return (
       // Элемент списка фильмов
@@ -63,6 +61,14 @@ export default class Movie extends Component {
           {/* Дата выпуска фильма */}
           <p className="date">{formattedDate}</p>
           {/* Жанры фильма (заглушка) */}
+
+          {/* <div className="genre">
+            {genres.map((genre) => (
+              <span key={genre.id} className="text">
+                {genre.name}
+              </span>
+            ))}
+          </div> */}
           <div className="genre">
             <p className="text">{genre_ids}</p>
             <p className="text">drama</p>

@@ -2,7 +2,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Pagination } from "antd"; // Импорт компонента Pagination из Ant Design
-import Movie from "../Movie/Movie"; // Импорт компонента Movie
+import Movie from "../MovieCard/MovieCard"; // Импорт компонента Movie
 import "./MovieList.css"; // Импорт стилей
 
 // Функциональный компонент MovieList
