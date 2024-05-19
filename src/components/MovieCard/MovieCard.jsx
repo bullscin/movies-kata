@@ -1,30 +1,30 @@
 /* eslint-disable react/destructuring-assignment */
-/* eslint-disable no-console */ // Отключение проверки на использование console.log
-/* eslint-disable class-methods-use-this */ // Отключение требования использования this внутри класса
-/* eslint-disable react/prop-types */ // Отключение проверки prop-types для этого файла
-/* eslint-disable camelcase */ // Отключение проверки camelCase для этого файла
+/* eslint-disable no-console */
+/* eslint-disable class-methods-use-this */
+/* eslint-disable react/prop-types */
+/* eslint-disable camelcase */
 import React, { Component } from "react";
-import PropTypes from "prop-types"; // Импорт библиотеки prop-types
-import { format } from "date-fns"; // Импорт функции форматирования даты из библиотеки date-fns
-import { Rate } from "antd"; // Импорт компонента Rate из библиотеки antd
-import "./MovieCard.css"; // Импорт стилей для компонента Movie
+import PropTypes from "prop-types";
+import { format } from "date-fns";
+import { Rate } from "antd";
+import { Context } from "../MovieApp/MovieApp"; // Импорт контекста
+import "./MovieCard.css"; // Импорт стилей
 
-export default class Movie extends Component {
+export default class MovieCard extends Component {
   constructor(props) {
     super(props);
-    // Привязка контекста для методов класса
     this.shortenDescription = this.shortenDescription.bind(this);
     this.handleRatingChange = this.handleRatingChange.bind(this);
   }
 
-  // Обработчик изменения рейтинга фильма
+  // Метод для обработки изменения рейтинга
   handleRatingChange(value) {
-    const { movie, onRatingChange } = this.props; // Получение фильма и обработчика из props
+    const { movie, onRatingChange } = this.props;
     const { id } = movie;
-    onRatingChange(id, value); // Вызов обработчика изменения рейтинга с передачей id фильма и его рейтинга
+    onRatingChange(id, value);
   }
 
-  // Функция для сокращения описания фильма
+  // Метод для сокращения описания
   shortenDescription(description, maxLength = 150) {
     if (description.length <= maxLength) return description;
     const lastSpaceIndex = description.lastIndexOf(" ", maxLength);
@@ -32,69 +32,68 @@ export default class Movie extends Component {
   }
 
   render() {
-    const { movie, newratedMovies } = this.props; // Получение фильма и новых оцененных фильмов из props
+    const { movie, newratedMovies } = this.props;
     const { title, release_date, overview, poster_path, rating, genre_ids } =
-      movie || newratedMovies; // Деструктуризация свойств фильма
-
-    // Форматирование даты выпуска фильма
+      movie || newratedMovies;
     const formattedDate = release_date
       ? format(new Date(release_date), "yyyy-MM-dd")
       : "Invalid Date";
 
-    // const genres = this.context
-    //   ? this.context.filter((genre) => genre_ids.includes(genre.id))
-    //   : [];
-    // console.log("Genres:", genres);
-
     return (
-      // Элемент списка фильмов
-      <li className="movies-item">
-        {/* Изображение фильма */}
-        <img
-          src={`https://image.tmdb.org/t/p/original${poster_path}`}
-          alt={title}
-          className="movies-img"
-        />
-        <div className="movies-info">
-          {/* Название фильма */}
-          <h2 className="title">{title}</h2>
-          {/* Дата выпуска фильма */}
-          <p className="date">{formattedDate}</p>
-          {/* Жанры фильма (заглушка) */}
-
-          {/* <div className="genre">
-            {genres.map((genre) => (
-              <span key={genre.id} className="text">
-                {genre.name}
-              </span>
-            ))}
-          </div> */}
-          <div className="genre">
-            <p className="text">{genre_ids}</p>
-            <p className="text">drama</p>
-          </div>
-          {/* Описание фильма */}
-          <p className="description">{this.shortenDescription(overview)}</p>
-          {/* Компонент Rate с обработчиком изменения */}
-          <Rate
-            count={10}
-            allowHalf
-            value={rating}
-            className="rate"
-            onChange={this.handleRatingChange}
-          />
-        </div>
-      </li>
+      <Context.Consumer>
+        {(genresList) => (
+          <li className="movies-item">
+            {" "}
+            {/* Элемент списка фильмов */}
+            <img
+              src={`https://image.tmdb.org/t/p/original${poster_path}`} // URL изображения
+              alt={title} // Альтернативный текст изображения
+              className="movies-img" // Класс для стилизации изображения
+            />
+            <div className="movies-info">
+              {" "}
+              {/* Информация о фильме */}
+              <h2 className="title">{title}</h2> {/* Название фильма */}
+              <p className="date">{formattedDate}</p> {/* Дата выпуска */}
+              <div className="genre">
+                {" "}
+                {/* Жанры фильма */}
+                {genre_ids.map((genreId) => {
+                  // Маппинг по массиву идентификаторов жанров
+                  const genre = genresList.genres.find((g) => g.id === genreId); // Поиск соответствующего жанра по идентификатору
+                  return (
+                    genre && ( // Если жанр существует
+                      <button className="text" type="button" key={genreId}>
+                        {" "}
+                        {/* Кнопка с названием жанра */}
+                        {genre.name} {/* Название жанра */}
+                      </button>
+                    )
+                  );
+                })}
+              </div>
+              <p className="description">{this.shortenDescription(overview)}</p>{" "}
+              {/* Описание фильма */}
+              <Rate
+                count={10} // Количество звезд в рейтинге
+                allowHalf // Возможность ставить полузвезды
+                value={rating} // Значение рейтинга
+                className="rate" // Класс для стилизации рейтинга
+                onChange={this.handleRatingChange} // Обработчик изменения рейтинга
+              />
+            </div>
+          </li>
+        )}
+      </Context.Consumer>
     );
   }
 }
 
 // Проверка типов для props компонента Movie
-Movie.propTypes = {
+MovieCard.propTypes = {
   movie: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    title: PropTypes.string.isRequired,
-    overview: PropTypes.string.isRequired,
-    // Добавьте другие свойства, если необходимо
-  }).isRequired,
+    id: PropTypes.number.isRequired, // Идентификатор фильма
+    title: PropTypes.string.isRequired, // Название фильма
+    overview: PropTypes.string.isRequired, // Описание фильма
+  }).isRequired, // Обязательный объект фильма
 };

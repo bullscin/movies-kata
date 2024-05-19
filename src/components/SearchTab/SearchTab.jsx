@@ -47,7 +47,6 @@ export default class SearchTab extends Component {
   }
 
   // Обработчик изменения рейтинга фильма
-  // Обработчик изменения рейтинга фильма
   handleRatingChange(movieId, rating) {
     const { movies } = this.state;
     const updatedMovies = movies.map((movie) => {

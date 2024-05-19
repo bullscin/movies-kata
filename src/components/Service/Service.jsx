@@ -116,7 +116,7 @@ export default class MovieService extends Component {
         },
       );
       const data = await response.json();
-      console.log(data);
+      // console.log(data);
       return data;
     } catch (error) {
       this.handleFetchError(error); // Обработка ошибок
