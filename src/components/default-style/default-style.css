@@ -98,3 +98,10 @@ button {
 .active {
   color: #1890ff; /* Изменяем цвет подчеркивания на серый */
 }
+
+@media (max-width: 420px) {
+  .wrapper-tabs {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}

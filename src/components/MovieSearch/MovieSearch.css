@@ -13,3 +13,9 @@
 
   box-shadow: inset 0 -2px 1px rgba(0, 0, 0, 0.03);
 }
+
+@media (max-width: 420px) {
+  .header {
+    padding: 17px 16px 10px;
+  }
+}

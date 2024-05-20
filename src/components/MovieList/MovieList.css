@@ -8,3 +8,10 @@
   flex-wrap: wrap;
   justify-content: space-between;
 }
+
+@media (max-width: 420px) {
+  .movies {
+    padding: 0px 16px;
+    gap: 20px;
+  }
+}

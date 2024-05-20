@@ -19,6 +19,8 @@
   padding: 12px 20px 12px;
   width: 268px;
   height: 281px;
+
+  position: relative;
 }
 
 .title {
@@ -26,6 +28,10 @@
   font-size: 20px;
   line-height: 28px;
   margin-bottom: 7px;
+  width: 90%; /* Ensure the title does not exceed container width */
+  white-space: normal; /* Allow text to wrap */
+  overflow: hidden; /* Hide overflow text */
+  text-overflow: ellipsis; /* Add ellipsis for overflow text */
 }
 
 .date {
@@ -57,4 +63,55 @@
   margin-top: auto;
 
   font-size: 14px;
+}
+
+.rating--circle {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  padding: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  background: transparent;
+  border: 2px solid #e9d100;
+}
+
+@media (max-width: 420px) {
+  .wrapp-mob {
+    /* display: flex; */
+  }
+  .movies-item {
+    width: 388px;
+
+    /* display: grid; */
+    /* justify-content: center; */
+    /* width: 100%; */
+    /* height: 245px;/ */
+  }
+  .movies-info-top-m {
+    /* display: flex; */
+  }
+  .movies-info-m {
+    /* display: flex; */
+    /* width: auto; */
+  }
+
+  .movies-info {
+    /* flex-direction: column;
+    align-items: stretch; */
+  }
+
+  .movies-img.active {
+    display: block;
+    /* width: auto;
+    height: 50%; */
+  }
+  .movies-img.hidden {
+    display: none;
+  }
 }

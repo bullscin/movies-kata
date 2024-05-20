@@ -15,6 +15,7 @@ export default class MovieCard extends Component {
     super(props);
     this.shortenDescription = this.shortenDescription.bind(this);
     this.handleRatingChange = this.handleRatingChange.bind(this);
+    this.getBorderColor = this.getBorderColor.bind(this);
   }
 
   // Метод для обработки изменения рейтинга
@@ -22,6 +23,14 @@ export default class MovieCard extends Component {
     const { movie, onRatingChange } = this.props;
     const { id } = movie;
     onRatingChange(id, value);
+  }
+
+  // Метод для получения цвета границы
+  getBorderColor(vote_average) {
+    if (vote_average >= 7) return "#66E900";
+    if (vote_average >= 5) return "#E9D100";
+    if (vote_average >= 3) return "#E97E00";
+    return "#E90000";
   }
 
   // Метод для сокращения описания
@@ -33,8 +42,15 @@ export default class MovieCard extends Component {
 
   render() {
     const { movie, newratedMovies } = this.props;
-    const { title, release_date, overview, poster_path, rating, genre_ids } =
-      movie || newratedMovies;
+    const {
+      title,
+      release_date,
+      overview,
+      poster_path,
+      rating,
+      genre_ids,
+      vote_average,
+    } = movie || newratedMovies;
     const formattedDate = release_date
       ? format(new Date(release_date), "yyyy-MM-dd")
       : "Invalid Date";
@@ -48,10 +64,22 @@ export default class MovieCard extends Component {
             <img
               src={`https://image.tmdb.org/t/p/original${poster_path}`} // URL изображения
               alt={title} // Альтернативный текст изображения
-              className="movies-img" // Класс для стилизации изображения
+              className="movies-img hidden" // Класс для стилизации изображения
             />
-            <div className="movies-info">
-              {" "}
+            <div className="movies-info ">
+              <img
+                src={`https://image.tmdb.org/t/p/original${poster_path}`} // URL изображения
+                alt={title} // Альтернативный текст изображения
+                className="movies-img active" // Класс для стилизации изображения
+              />
+              <div
+                style={{
+                  border: `2px solid ${this.getBorderColor(vote_average)}`,
+                }}
+                className="rating--circle"
+              >
+                {vote_average.toFixed(1)}
+              </div>{" "}
               {/* Информация о фильме */}
               <h2 className="title">{title}</h2> {/* Название фильма */}
               <p className="date">{formattedDate}</p> {/* Дата выпуска */}
