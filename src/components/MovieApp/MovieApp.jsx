@@ -6,6 +6,7 @@ import SearchTab from "../SearchTab/SearchTab"; // Импорт компонен
 import RatedTab from "../RatedTab/RatedTab"; // Импорт компонента RatedTab из файла RatedTab.js
 import Alert from "../Alert/Alert"; // Импорт компонента Alert из файла Alert.js
 import "../default-style/default-style.css"; // Импорт файла стилей default-style.css
+import "./MovieApp.css"; // Импорт файла стилей default-style.css
 
 export const Context = createContext([]); // Создание контекста с пустым массивом по умолчанию
 
@@ -75,13 +76,11 @@ export default class MovieApp extends Component {
 
     return (
       <Context.Provider value={genresList}>
-        {" "}
         {/* Предоставление значения контекста для дочерних компонентов */}
         <div className="container">
           {" "}
           {/* Обертка для контента */}
           <div className="wrapper-tabs">
-            {" "}
             {/* Обертка для вкладок */}
             <button
               type="button"

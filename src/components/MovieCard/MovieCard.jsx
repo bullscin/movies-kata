@@ -1,7 +1,4 @@
-/* eslint-disable react/destructuring-assignment */
-/* eslint-disable no-console */
 /* eslint-disable class-methods-use-this */
-/* eslint-disable react/prop-types */
 /* eslint-disable camelcase */
 import React, { Component } from "react";
 import PropTypes from "prop-types";
@@ -13,12 +10,23 @@ import "./MovieCard.css"; // Импорт стилей
 export default class MovieCard extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      isMobile: window.innerWidth <= 420,
+    };
+    this.updateDimensions = this.updateDimensions.bind(this);
     this.shortenDescription = this.shortenDescription.bind(this);
     this.handleRatingChange = this.handleRatingChange.bind(this);
     this.getBorderColor = this.getBorderColor.bind(this);
   }
 
-  // Метод для обработки изменения рейтинга
+  componentDidMount() {
+    window.addEventListener("resize", this.updateDimensions);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.updateDimensions);
+  }
+
   handleRatingChange(value) {
     const { movie, onRatingChange } = this.props;
     const { id } = movie;
@@ -33,7 +41,10 @@ export default class MovieCard extends Component {
     return "#E90000";
   }
 
-  // Метод для сокращения описания
+  updateDimensions() {
+    this.setState({ isMobile: window.innerWidth <= 420 });
+  }
+
   shortenDescription(description, maxLength = 150) {
     if (description.length <= maxLength) return description;
     const lastSpaceIndex = description.lastIndexOf(" ", maxLength);
@@ -55,73 +66,140 @@ export default class MovieCard extends Component {
       ? format(new Date(release_date), "yyyy-MM-dd")
       : "Invalid Date";
 
+    const { isMobile } = this.state;
+
     return (
       <Context.Consumer>
-        {(genresList) => (
-          <li className="movies-item">
-            {" "}
-            {/* Элемент списка фильмов */}
-            <img
-              src={`https://image.tmdb.org/t/p/original${poster_path}`} // URL изображения
-              alt={title} // Альтернативный текст изображения
-              className="movies-img hidden" // Класс для стилизации изображения
-            />
-            <div className="movies-info ">
+        {(genresList) =>
+          !isMobile ? (
+            <li className="movies-item">
               <img
                 src={`https://image.tmdb.org/t/p/original${poster_path}`} // URL изображения
                 alt={title} // Альтернативный текст изображения
-                className="movies-img active" // Класс для стилизации изображения
+                className="movies-img " // Класс для стилизации изображения
               />
-              <div
-                style={{
-                  border: `2px solid ${this.getBorderColor(vote_average)}`,
-                }}
-                className="rating--circle"
-              >
-                {vote_average.toFixed(1)}
-              </div>{" "}
-              {/* Информация о фильме */}
-              <h2 className="title">{title}</h2> {/* Название фильма */}
-              <p className="date">{formattedDate}</p> {/* Дата выпуска */}
-              <div className="genre">
-                {" "}
-                {/* Жанры фильма */}
-                {genre_ids.map((genreId) => {
-                  // Маппинг по массиву идентификаторов жанров
-                  const genre = genresList.genres.find((g) => g.id === genreId); // Поиск соответствующего жанра по идентификатору
-                  return (
-                    genre && ( // Если жанр существует
-                      <button className="text" type="button" key={genreId}>
-                        {" "}
-                        {/* Кнопка с названием жанра */}
-                        {genre.name} {/* Название жанра */}
-                      </button>
-                    )
-                  );
-                })}
+              <div className="movies-info">
+                <div
+                  style={{
+                    border: `2px solid ${this.getBorderColor(vote_average)}`,
+                  }}
+                  className="rating--circle"
+                >
+                  {vote_average.toFixed(1)}
+                </div>{" "}
+                {/* Информация о фильме */}
+                <h2 className="title">{title}</h2> {/* Название фильма */}
+                <p className="date">{formattedDate}</p> {/* Дата выпуска */}
+                <div className="genre">
+                  {" "}
+                  {/* Жанры фильма */}
+                  {genre_ids.map((genreId) => {
+                    // Маппинг по массиву идентификаторов жанров
+                    const genre = genresList.genres.find(
+                      (g) => g.id === genreId,
+                    ); // Поиск соответствующего жанра по идентификатору
+                    return (
+                      genre && ( // Если жанр существует
+                        <button className="text" type="button" key={genreId}>
+                          {genre.name} {/* Название жанра */}
+                        </button>
+                      )
+                    );
+                  })}
+                </div>
+                <p className="description">
+                  {this.shortenDescription(overview)}
+                </p>{" "}
+                {/* Описание фильма */}
+                <Rate
+                  count={10} // Количество звезд в рейтинге
+                  allowHalf // Возможность ставить полузвезды
+                  value={rating} // Значение рейтинга
+                  className="rate" // Класс для стилизации рейтинга
+                  onChange={this.handleRatingChange} // Обработчик изменения рейтинга
+                />
               </div>
-              <p className="description">{this.shortenDescription(overview)}</p>{" "}
-              {/* Описание фильма */}
-              <Rate
-                count={10} // Количество звезд в рейтинге
-                allowHalf // Возможность ставить полузвезды
-                value={rating} // Значение рейтинга
-                className="rate" // Класс для стилизации рейтинга
-                onChange={this.handleRatingChange} // Обработчик изменения рейтинга
-              />
-            </div>
-          </li>
-        )}
+            </li>
+          ) : (
+            <li className="movies-item">
+              <div className="movies-info ">
+                <div className="movies-top">
+                  <img
+                    src={`https://image.tmdb.org/t/p/original${poster_path}`} // URL изображения
+                    alt={title}
+                    className="movies-img "
+                  />
+                  <div
+                    style={{
+                      border: `2px solid ${this.getBorderColor(vote_average)}`,
+                    }}
+                    className="rating--circle"
+                  >
+                    {vote_average.toFixed(1)}
+                  </div>
+                  <div>
+                    <h2 className="title">{title}</h2>
+                    <p className="date">{formattedDate}</p>
+                    <div className="genre">
+                      {genre_ids.map((genreId) => {
+                        const genre = genresList.genres.find(
+                          (g) => g.id === genreId,
+                        );
+                        return (
+                          genre && (
+                            <button
+                              className="text"
+                              type="button"
+                              key={genreId}
+                            >
+                              {genre.name}
+                            </button>
+                          )
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+                <div className="movies-bottom">
+                  <p className="description">
+                    {this.shortenDescription(overview)}
+                  </p>{" "}
+                  <Rate
+                    count={10}
+                    allowHalf
+                    value={rating}
+                    className="rate"
+                    onChange={this.handleRatingChange}
+                  />
+                </div>
+              </div>
+            </li>
+          )
+        }
       </Context.Consumer>
     );
   }
 }
 
-// Проверка типов для props компонента Movie
 MovieCard.propTypes = {
   movie: PropTypes.shape({
-    id: PropTypes.number.isRequired, // Идентификатор фильма
-    title: PropTypes.string.isRequired, // Название фильма
-    overview: PropTypes.string.isRequired, // Описание фильма
-  }).isRequired, // Обязательный объект фильма
+    id: PropTypes.number.isRequired,
+    title: PropTypes.string.isRequired,
+    overview: PropTypes.string.isRequired,
+  }).isRequired,
+  onRatingChange: PropTypes.func.isRequired,
+  newratedMovies: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    title: PropTypes.string.isRequired,
+    overview: PropTypes.string.isRequired,
+    release_date: PropTypes.string.isRequired,
+    poster_path: PropTypes.string.isRequired,
+    rating: PropTypes.number.isRequired,
+    genre_ids: PropTypes.arrayOf(PropTypes.number).isRequired,
+    vote_average: PropTypes.number.isRequired,
+  }),
+};
+
+MovieCard.defaultProps = {
+  newratedMovies: null,
 };

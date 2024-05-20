@@ -1,0 +1,51 @@
+.wrapper-tabs {
+  width: fit-content;
+  height: 53.77px;
+  margin: 17px auto 36px;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+}
+
+.tab,
+.active {
+  color: rgba(0, 0, 0, 0.25);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 400;
+  background-color: inherit;
+  border: none;
+  position: relative;
+  width: 64.64px;
+  height: 51.53px;
+}
+
+.tab::before,
+.active::before {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  color: rgba(0, 0, 0, 0.25);
+}
+
+.tab:focus::before,
+.active:focus::before {
+  background-color: #1890ff;
+}
+
+.tab:focus,
+.active {
+  color: #1890ff;
+}
+
+@media (max-width: 420px) {
+  .wrapper-tabs {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}

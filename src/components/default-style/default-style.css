@@ -37,8 +37,7 @@ button {
   font: inherit;
   color: inherit;
   background-color: transparent;
-  /* отображаем курсор в виде руки при наведении; некоторые
-  считают, что необходимо оставлять стрелочный вид для кнопок */
+
   cursor: pointer;
 }
 
@@ -52,56 +51,4 @@ button {
   display: flex;
   justify-content: center;
   margin-bottom: 17px;
-}
-
-.wrapper-tabs {
-  width: fit-content; /* Ширина элемента под контент */
-  height: 53.77px;
-  margin: 17px auto 36px; /* Центрирование по горизонтали и вертикали с заданными отступами */
-  display: flex;
-  justify-content: center;
-  gap: 16px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.25);
-}
-
-.tab,
-.active {
-  color: rgba(0, 0, 0, 0.25);
-  font-family: 'Inter', sans-serif;
-  font-size: 14px;
-  line-height: 22px;
-  font-weight: 400;
-  background-color: inherit;
-  border: none;
-  position: relative; /* Добавляем позиционирование */
-  width: 64.64px;
-  height: 51.53px;
-}
-
-.tab::before,
-.active::before {
-  content: '';
-  position: absolute; /* Позиционируем псевдоэлемент */
-  bottom: -2px; /* Отступаем от нижней границы кнопки */
-  left: 0; /* Располагаем псевдоэлемент в начале кнопки */
-  width: 100%; /* Ширина псевдоэлемента равна ширине кнопки */
-  height: 2px; /* Толщина линии */
-  color: rgba(0, 0, 0, 0.25);
-}
-
-.tab:focus::before,
-.active:focus::before {
-  background-color: #1890ff; /* Изменяем цвет подчеркивания на серый */
-}
-
-.tab:focus,
-.active {
-  color: #1890ff; /* Изменяем цвет подчеркивания на серый */
-}
-
-@media (max-width: 420px) {
-  .wrapper-tabs {
-    margin-top: 0;
-    margin-bottom: 0;
-  }
 }

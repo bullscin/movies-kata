@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { debounce } from "lodash";
-import "./MovieSearch.css"; // Импорт стилей
+import "./MovieSearch.css";
 
 export default class MovieSearch extends Component {
   constructor(props) {
     super(props);
-    // Инициализация состояния компонента
+
     this.state = {
       querySearch: "", // Строка запроса
     };
@@ -40,7 +40,6 @@ export default class MovieSearch extends Component {
     const { querySearch } = this.state;
     return (
       <header className="header">
-        {" "}
         {/* Обертка для поисковой строки */}
         <input
           className="movie-search" // Класс для стилизации поисковой строки
@@ -54,5 +53,5 @@ export default class MovieSearch extends Component {
 }
 
 MovieSearch.propTypes = {
-  onQueryChange: PropTypes.func.isRequired, // Проверка типа переданной функции для изменения запроса
+  onQueryChange: PropTypes.func.isRequired,
 };

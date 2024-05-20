@@ -5,18 +5,16 @@ import MovieList from "../MovieList/MovieList";
 export default class RatedTab extends Component {
   constructor(props) {
     super(props);
-    // Инициализация состояния
+
     this.state = {
       newratedMovies: [], // Хранит данные оценённых фильмов
     };
   }
 
-  // Метод жизненного цикла, вызываемый после монтирования компонента
   componentDidMount() {
     this.updateRatedMoviesFromLocalStorage();
   }
 
-  // Метод жизненного цикла, вызываемый после обновления компонента
   componentDidUpdate(prevProps) {
     // Проверка, изменились ли свойства
     if (prevProps !== this.props) {

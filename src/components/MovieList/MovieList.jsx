@@ -1,11 +1,9 @@
-// Импорт зависимостей
 import React from "react";
 import PropTypes from "prop-types";
 import { Pagination } from "antd"; // Импорт компонента Pagination из Ant Design
-import Movie from "../MovieCard/MovieCard"; // Импорт компонента Movie
-import "./MovieList.css"; // Импорт стилей
+import Movie from "../MovieCard/MovieCard";
+import "./MovieList.css";
 
-// Функциональный компонент MovieList
 export default function MovieList({
   movies,
   currentPage,
@@ -18,7 +16,6 @@ export default function MovieList({
     return <p>No movies found.</p>; // Вывод сообщения, если фильмы не найдены
   }
 
-  // Возвращаемый JSX
   return (
     <div>
       {/* Список фильмов */}
