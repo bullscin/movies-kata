@@ -72,7 +72,7 @@ export default class MovieApp extends Component {
       content = currentTab === "search" ? <SearchTab /> : <RatedTab />; // Отображение соответствующей вкладки в зависимости от текущей вкладки
     }
 
-    console.log(genresList); // Вывод списка жанров в консоль
+    // console.log(genresList); // Вывод списка жанров в консоль
 
     return (
       <Context.Provider value={genresList}>
